@@ -1,9 +1,6 @@
 const { validationResult } = require('express-validator');
 const Expense = require('../models/expense');
 
-// @desc    Get all expenses for user
-// @route   GET /api/expenses
-// @access  Private
 const getExpenses = async (req, res) => {
   try {
     const {
@@ -18,7 +15,6 @@ const getExpenses = async (req, res) => {
       sortOrder = 'desc'
     } = req.query;
 
-    // Build filters
     const filters = {};
     if (category && category !== 'all') filters.category = category;
     if (startDate) filters.startDate = startDate;
@@ -26,23 +22,18 @@ const getExpenses = async (req, res) => {
     if (minAmount) filters.minAmount = parseFloat(minAmount);
     if (maxAmount) filters.maxAmount = parseFloat(maxAmount);
 
-    // Debug logging
     console.log('Get expenses request:', {
       userId: req.user.id,
       filters,
       query: req.query
     });
-
-    // Get expenses with filters
     const expenses = await Expense.getExpensesByUser(req.user.id, filters);
 
     console.log('Found expenses:', expenses.length);
 
-    // Apply sorting
     const sortOptions = {};
     sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
     
-    // Apply pagination
     const startIndex = (parseInt(page) - 1) * parseInt(limit);
     const endIndex = startIndex + parseInt(limit);
     
@@ -65,7 +56,6 @@ const getExpenses = async (req, res) => {
       })
       .slice(startIndex, endIndex);
 
-    // Get total count for pagination
     const totalExpenses = expenses.length;
     const totalPages = Math.ceil(totalExpenses / parseInt(limit));
 
@@ -91,10 +81,6 @@ const getExpenses = async (req, res) => {
     });
   }
 };
-
-// @desc    Get single expense
-// @route   GET /api/expenses/:id
-// @access  Private
 const getExpense = async (req, res) => {
   try {
     const expense = await Expense.findOne({
@@ -123,12 +109,9 @@ const getExpense = async (req, res) => {
   }
 };
 
-// @desc    Create new expense
-// @route   POST /api/expenses
-// @access  Private
+
 const createExpense = async (req, res) => {
   try {
-    // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -163,13 +146,8 @@ const createExpense = async (req, res) => {
     });
   }
 };
-
-// @desc    Update expense
-// @route   PUT /api/expenses/:id
-// @access  Private
 const updateExpense = async (req, res) => {
   try {
-    // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -214,9 +192,6 @@ const updateExpense = async (req, res) => {
   }
 };
 
-// @desc    Delete expense
-// @route   DELETE /api/expenses/:id
-// @access  Private
 const deleteExpense = async (req, res) => {
   try {
     const expense = await Expense.findOne({
@@ -246,10 +221,6 @@ const deleteExpense = async (req, res) => {
     });
   }
 };
-
-// @desc    Get expense statistics
-// @route   GET /api/expenses/stats
-// @access  Private
 const getExpenseStats = async (req, res) => {
   try {
     const { startDate, endDate } = req.query;

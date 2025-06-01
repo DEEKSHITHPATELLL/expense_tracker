@@ -1,6 +1,6 @@
 const { body } = require('express-validator');
 
-// User registration validation
+
 const validateRegister = [
   body('name')
     .trim()
@@ -22,7 +22,6 @@ const validateRegister = [
     .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number')
 ];
 
-// User login validation
 const validateLogin = [
   body('email')
     .trim()
@@ -34,8 +33,6 @@ const validateLogin = [
     .notEmpty()
     .withMessage('Password is required')
 ];
-
-// Profile update validation
 const validateProfileUpdate = [
   body('name')
     .trim()
@@ -51,7 +48,6 @@ const validateProfileUpdate = [
     .normalizeEmail()
 ];
 
-// Expense validation
 const validateExpense = [
   body('title')
     .trim()
