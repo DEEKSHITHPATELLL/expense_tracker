@@ -72,7 +72,7 @@ expenseSchema.index({ userId: 1, createdAt: -1 });
 
 // Virtual for formatted amount (for display purposes)
 expenseSchema.virtual('formattedAmount').get(function() {
-  return `$${this.amount.toFixed(2)}`;
+  return `₹${this.amount.toFixed(2)}`;
 });
 
 // Static method to get expenses by user with filters

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  DollarSign, 
-  LayoutDashboard, 
-  Receipt, 
-  BarChart3, 
-  User, 
+import {
+  IndianRupee,
+  LayoutDashboard,
+  Receipt,
+  BarChart3,
+  User,
   LogOut,
   Menu,
   X
@@ -54,7 +54,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           {/* Brand */}
           <Link to="/dashboard" className="navbar-brand">
-            <DollarSign size={24} style={{ marginRight: '0.5rem' }} />
+            <IndianRupee size={24} style={{ marginRight: '0.5rem' }} />
             ExpenseTracker
           </Link>
 

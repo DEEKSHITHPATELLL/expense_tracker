@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { expensesAPI } from '../../services/api';
-import { 
-  DollarSign, 
-  TrendingUp, 
-  Receipt, 
+import { expensesAPI } from '../../services/api.js';
+import {
+  IndianRupee,
+  TrendingUp,
+  Receipt,
   Calendar,
   Plus,
   ArrowUpRight,
@@ -33,11 +33,11 @@ const Dashboard = () => {
         expensesAPI.getExpenses({ limit: 5, sortBy: 'date', sortOrder: 'desc' })
       ]);
 
-      console.log('Dashboard stats response:', statsResponse.data.stats);
-      console.log('Dashboard recent expenses:', expensesResponse.data.expenses);
+      console.log('Dashboard stats response:', statsResponse.data.data.stats);
+      console.log('Dashboard recent expenses:', expensesResponse.data.data.expenses);
 
-      setStats(statsResponse.data.stats);
-      setRecentExpenses(expensesResponse.data.expenses);
+      setStats(statsResponse.data.data.stats || {});
+      setRecentExpenses(expensesResponse.data.data.expenses || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
@@ -46,9 +46,9 @@ const Dashboard = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR'
     }).format(amount);
   };
 
@@ -106,7 +106,7 @@ const Dashboard = () => {
               borderRadius: 'var(--border-radius)',
               color: 'white'
             }}>
-              <DollarSign size={24} />
+              <IndianRupee size={24} />
             </div>
           </div>
         </div>

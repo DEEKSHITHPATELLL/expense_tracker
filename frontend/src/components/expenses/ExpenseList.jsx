@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { expensesAPI } from '../../services/api';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Edit, 
-  Trash2, 
+import { expensesAPI } from '../../services/api.js';
+import {
+  Plus,
+  Search,
+  Filter,
+  Edit,
+  Trash2,
   Calendar,
-  DollarSign,
+  IndianRupee,
   Tag
 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -58,8 +58,8 @@ const ExpenseList = () => {
         limit: 10
       });
       
-      setExpenses(response.data.expenses);
-      setPagination(response.data.pagination);
+      setExpenses(response.data.data.expenses || []);
+      setPagination(response.data.data.pagination || {});
     } catch (error) {
       console.error('Error fetching expenses:', error);
       toast.error('Failed to fetch expenses');
@@ -95,9 +95,9 @@ const ExpenseList = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR'
     }).format(amount);
   };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { expensesAPI } from '../../services/api';
+import { expensesAPI } from '../../services/api.js';
 import { 
   BarChart, 
   Bar, 
@@ -45,10 +45,10 @@ const Analytics = () => {
         })
       ]);
 
-      setStats(statsResponse.data.stats);
-      
+      setStats(statsResponse.data.data.stats || {});
+
       // Process monthly data
-      const expenses = expensesResponse.data.expenses;
+      const expenses = expensesResponse.data.data.expenses || [];
       const monthlyMap = {};
       
       expenses.forEach(expense => {
@@ -85,9 +85,9 @@ const Analytics = () => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR'
     }).format(amount);
   };
 

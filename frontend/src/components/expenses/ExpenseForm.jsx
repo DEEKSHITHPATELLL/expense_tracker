@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { expensesAPI } from '../../services/api';
+import { expensesAPI } from '../../services/api.js';
 import { Save, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -45,7 +45,7 @@ const ExpenseForm = () => {
     try {
       setIsLoadingExpense(true);
       const response = await expensesAPI.getExpense(id);
-      const expense = response.data.expense;
+      const expense = response.data.data.expense;
       
       setFormData({
         title: expense.title,

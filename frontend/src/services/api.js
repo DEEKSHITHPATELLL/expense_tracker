@@ -1,22 +1,25 @@
-import axios from 'axios';
-import toast from 'react-hot-toast';
+﻿import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api';
-
-// Create axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (token && token !== 'null' && token !== 'undefined') {
+      // Basic validation to check if token looks like a JWT
+      const tokenParts = token.split('.');
+      if (tokenParts.length === 3) {
+        config.headers.Authorization = `Bearer ${token}`;
+      } else {
+        // Token is malformed, clear it
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     }
     return config;
   },
@@ -25,112 +28,38 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle errors
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      const errorCode = error.response?.data?.code;
-
-      // Clear stored auth data
+      // Clear invalid tokens
       localStorage.removeItem('token');
       localStorage.removeItem('user');
 
-      // Only redirect and show toast if we're not already on login page
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+      // Only redirect if we're not already on login/register pages
+      const currentPath = window.location.pathname;
+      if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
         window.location.href = '/login';
-
-        if (errorCode === 'INVALID_TOKEN') {
-          toast.error('Invalid session. Please login again.');
-        } else if (errorCode === 'TOKEN_EXPIRED') {
-          toast.error('Session expired. Please login again.');
-        } else {
-          toast.error('Authentication required. Please login.');
-        }
       }
     }
     return Promise.reject(error);
   }
 );
 
-// Auth API
 export const authAPI = {
-  register: async (userData) => {
-    const response = await api.post('/auth/register', userData);
-    return response.data;
-  },
-
-  login: async (credentials) => {
-    const response = await api.post('/auth/login', credentials);
-    return response.data;
-  },
-
-  getProfile: async () => {
-    const response = await api.get('/auth/me');
-    return response.data;
-  },
-
-  updateProfile: async (userData) => {
-    const response = await api.put('/auth/profile', userData);
-    return response.data;
-  },
+  register: (userData) => api.post('/auth/register', userData),
+  login: (credentials) => api.post('/auth/login', credentials),
+  getProfile: () => api.get('/auth/me'),
+  updateProfile: (userData) => api.put('/auth/profile', userData),
 };
 
-// Expenses API
 export const expensesAPI = {
-  getExpenses: async (filters = {}) => {
-    const params = new URLSearchParams();
-    
-    Object.keys(filters).forEach(key => {
-      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
-        params.append(key, filters[key]);
-      }
-    });
-
-    const response = await api.get(`/expenses?${params.toString()}`);
-    return response.data;
-  },
-
-  getExpense: async (id) => {
-    const response = await api.get(`/expenses/${id}`);
-    return response.data;
-  },
-
-  createExpense: async (expenseData) => {
-    const response = await api.post('/expenses', expenseData);
-    return response.data;
-  },
-
-  updateExpense: async (id, expenseData) => {
-    const response = await api.put(`/expenses/${id}`, expenseData);
-    return response.data;
-  },
-
-  deleteExpense: async (id) => {
-    const response = await api.delete(`/expenses/${id}`);
-    return response.data;
-  },
-
-  getStats: async (filters = {}) => {
-    const params = new URLSearchParams();
-    
-    Object.keys(filters).forEach(key => {
-      if (filters[key] !== undefined && filters[key] !== null && filters[key] !== '') {
-        params.append(key, filters[key]);
-      }
-    });
-
-    const response = await api.get(`/expenses/stats?${params.toString()}`);
-    return response.data;
-  },
-};
-
-// Health check
-export const healthCheck = async () => {
-  const response = await api.get('/health');
-  return response.data;
+  getExpenses: (params = {}) => api.get('/expenses', { params }),
+  getExpense: (id) => api.get(/expenses/),
+  createExpense: (expenseData) => api.post('/expenses', expenseData),
+  updateExpense: (id, expenseData) => api.put(/expenses/, expenseData),
+  deleteExpense: (id) => api.delete(/expenses/),
+  getStats: (params = {}) => api.get('/expenses/stats', { params }),
 };
 
 export default api;
